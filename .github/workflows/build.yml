@@ -13,7 +13,7 @@ jobs:
       - run: cp pubspec.yaml /tmp/pubspec.yaml
       - run: rm -rf android
       - run: cd /tmp && flutter create --template app --platforms android guardadito_temp
-      - run: cp -r /tmp/guardadito_temp/android.
+      - run: cp -r /tmp/guardadito_temp/android .
       - run: cp /tmp/main.dart lib/main.dart
       - run: flutter pub get
       - run: flutter build apk --release
