@@ -135,38 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Color(0xFFFFB86A), title: Row(children: [Icon(Icons.savings), SizedBox(width: 8), Text("Guardadito", style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black))])),
-        actions: [PopupMenuButton(onSelected: (v){ if(v==1) _borrarTodo(); }, itemBuilder: (c)=> [PopupMenuItem(value:1, child: Row(children:[Icon(Icons.delete_forever, color: Colors.red), SizedBox(width:8), Text('Borrar todo')]))])],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(children: [
-          Container(width: double.infinity, padding: EdgeInsets.all(20), decoration: BoxDecoration(color: Color(0xFF0E4D64), borderRadius: BorderRadius.circular(15), border: Border.all(width: 3)),
-            child: Column(children: [Text("Saldo Total", style: TextStyle(color: Colors.white)), Text("\$${total.toStringAsFixed(0)}", style: TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.w900))])),
-          SizedBox(height: 16),
-          Expanded(child: GridView.count(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, children: [
-            _card("Casa", sobres['Casa']!, Color(0xFFFFB86A), Icons.home),
-            _card("Comida", sobres['Comida']!, Color(0xFF81B29A), Icons.restaurant),
-            _card("Coppel", sobres['Coppel']!, Color(0xFFFFD166), Icons.credit_card),
-            _card("Chamba", sobres['Chamba']!, Color(0xFF2EC4B6), Icons.work),
-            _card("Colchon", sobres['Colchon']!, Color(0xFFF2CC8F), Icons.bed),
-            _card("Gusto", sobres['Gusto']!, Color(0xFFFF9A8A), Icons.star),
-          ])),
-        ]),
-      ),
-      bottomNavigationBar: BottomAppBar(child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-        ElevatedButton.icon(onPressed: _agregarIngreso, icon: Icon(Icons.add), label: Text("Ganancia")),
-        ElevatedButton.icon(onPressed: _agregarGasto, icon: Icon(Icons.remove), label: Text("Gasto"), style: ElevatedButton.styleFrom(backgroundColor: Colors.orange)),
-      ])),
-    );
-  }
-
-  Widget _card(String n, double m, Color c, IconData i) => Container(
-    padding: EdgeInsets.all(12),
-    decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(15), border: Border.all(width: 3)),
-    child: Stack(children: [
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(i), Spacer(), Text(n, style: TextStyle(fontWeight: FontWeight.bold)), Text("\$${m.toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 26))]),
-      Positioned(top: 0, right: 0, child: InkWell(onTap: ()=> _borrarSobre(n), child: Container(padding: EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(width: 2)), child: Icon(Icons.close, size: 14)))),
-    ]),
-  );
-}
+      appBar: AppBar(
+        backgroundColor: Color(0xFFFFB86A), 
+        title: Row(children: [Icon(Icons.savings), SizedBox(width: 8), Text("Guardadito", style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black))]),
+        actions: [
+          PopupMenuButton(
+            onSelected: (v){ if(v==1) _borrarTodo(); },
+            itemBuilder: (c)=> [Popup
