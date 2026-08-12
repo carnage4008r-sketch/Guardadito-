@@ -78,20 +78,27 @@ class _HomeScreenState extends State<HomeScreen> {
           return Padding(
             padding: EdgeInsets.fromLTRB(20, 20, 20, 80),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Text("Cuanto ganaste?", style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900)),
+              Text("Cuanto ganaste hoy?", style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900)),
               SizedBox(height: 10),
               DropdownButton<String>(
                 value: selected, 
                 isExpanded: true, 
                 onChanged: (v){ if(v!=null) setM(()=> selected=v); }, 
-                items: sobres.keys.map((k)=> DropdownMenuItem(value:k, child: Text(k))).toList()
+                items: sobres.keys.map((k)=> DropdownMenuItem(value:k, child: Text("Guardar en $k"))).toList()
               ),
-              TextField(controller: ctrl, keyboardType: TextInputType.number, style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+              TextField(controller: ctrl, keyboardType: TextInputType.number, autofocus: true, style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold), decoration: InputDecoration(prefixText: "\$ ")),
+              if((double.tryParse(ctrl.text) ?? 0) > 0)
+                Padding(padding: EdgeInsets.only(top:10), child: Text("Nuevo total: \$${(total + (double.tryParse(ctrl.text) ?? 0)).toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.bold))),
               SizedBox(height: 15),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF2EC4B6), minimumSize: Size(double.infinity, 55)),
                 onPressed: () { 
                   double m = double.tryParse(ctrl.text) ?? 0; 
-                  if (m > 0) { box.put(selected, (box.get(selected, defaultValue: 0.0) + m)); setState(() {}); Navigator.pop(context); } 
+                  if (m > 0) { 
+                    box.put(selected, (box.get(selected, defaultValue: 0.0) + m)); 
+                    setState(() {}); 
+                    Navigator.pop(context); 
+                  } 
                 },
                 child: Text("Guardar en $selected"),
               )
@@ -102,9 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _agregarGasto() {
+  void _agregarGastoPreseleccionado(String pre) {
     TextEditingController ctrl = TextEditingController();
-    String selected = 'Comida';
+    String selected = pre;
     showModalBottomSheet(
       context: context, 
       backgroundColor: Color(0xFFFFF8E7),
@@ -113,34 +120,35 @@ class _HomeScreenState extends State<HomeScreen> {
         return Padding(
           padding: EdgeInsets.all(20),
           child: StatefulBuilder(builder: (c, setM) {
+            double gast = double.tryParse(ctrl.text) ?? 0;
             return Column(mainAxisSize: MainAxisSize.min, children: [
-              Text("En que gastaste?", style: TextStyle(fontWeight: FontWeight.w900)),
-              DropdownButton<String>(
-                value: selected, 
-                isExpanded: true, 
-                onChanged: (v){ if(v!=null) setM(()=> selected=v); }, 
-                items: sobres.keys.map((k)=> DropdownMenuItem(value:k, child: Text(k))).toList()
-              ),
-              TextField(controller: ctrl, keyboardType: TextInputType.number, style: TextStyle(fontSize: 40, fontWeight: FontWeight.w900)),
+              Text("Gastar de $selected", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+              Text("Tienes: \$${box.get(selected).toStringAsFixed(0)}", style: TextStyle(color: Colors.grey)),
+              TextField(controller: ctrl, keyboardType: TextInputType.number, autofocus: true, style: TextStyle(fontSize: 50, fontWeight: FontWeight.w900), decoration: InputDecoration(prefixText: "\$ "), onChanged: (v)=> setM((){})),
+              if(gast > 0)
+                Text("Quedará en $selected: \$${(box.get(selected) - gast).toStringAsFixed(0)}\nTotal quedará: \$${(total - gast).toStringAsFixed(0)}", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
               SizedBox(height: 15),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, minimumSize: Size(double.infinity, 50)),
                 onPressed: () {
                   double g = double.tryParse(ctrl.text) ?? 0;
                   if(g>0){ 
-                    double r = (10 - g % 10) % 10;
                     box.put(selected, box.get(selected) - g); 
-                    box.put('Colchon', box.get('Colchon') + r);
                     setState((){}); 
                     Navigator.pop(context); 
                   }
                 },
-                child: Text("Descontar de $selected")
+                child: Text("Descontar \$${ctrl.text} de $selected")
               )
             ]);
           }),
         );
       }
     );
+  }
+
+  void _agregarGasto() {
+    _agregarGastoPreseleccionado('Comida');
   }
 
   @override
@@ -154,19 +162,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Column(children: [
-        Container(
-          width: double.infinity, 
-          margin: EdgeInsets.all(16),
-          padding: EdgeInsets.all(20), 
-          decoration: BoxDecoration(color: Color(0xFF0E4D64), borderRadius: BorderRadius.circular(15)),
-          child: Column(children: [
-            Text("Saldo Total", style: TextStyle(color: Colors.white)), 
-            Text("\$${total.toStringAsFixed(0)}", style: TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.w900))
-          ])
+        InkWell(
+          onTap: _agregarIngreso,
+          child: Container(
+            width: double.infinity, 
+            margin: EdgeInsets.all(16),
+            padding: EdgeInsets.all(20), 
+            decoration: BoxDecoration(color: Color(0xFF0E4D64), borderRadius: BorderRadius.circular(15)),
+            child: Column(children: [
+              Text("Saldo Total - Toca para agregar ganancia", style: TextStyle(color: Colors.white70, fontSize: 12)), 
+              Text("\$${total.toStringAsFixed(0)}", style: TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.w900))
+            ])
+          ),
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             child: GridView.count(
               crossAxisCount: 2, 
               crossAxisSpacing: 12, 
@@ -187,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(children: [
             Expanded(child: ElevatedButton.icon(onPressed: _agregarIngreso, icon: Icon(Icons.add), label: Text("Ganancia"))),
             SizedBox(width: 12),
-            Expanded(child: ElevatedButton.icon(onPressed: _agregarGasto, icon: Icon(Icons.remove), label: Text("Gasto"))),
+            Expanded(child: ElevatedButton.icon(onPressed: _agregarGasto, icon: Icon(Icons.remove), label: Text("Gasto"), style: ElevatedButton.styleFrom(backgroundColor: Colors.orange))),
           ]),
         )
       ]),
@@ -195,13 +206,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _card(String n, double m, Color c, IconData i) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(15), border: Border.all(width: 3)),
-      child: Stack(children: [
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(i), Spacer(), Text(n, style: TextStyle(fontWeight: FontWeight.bold)), Text("\$${m.toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 26))]),
-        Positioned(top: 0, right: 0, child: InkWell(onTap: ()=> _borrarSobre(n), child: Container(padding: EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(width: 2)), child: Icon(Icons.close, size: 14)))),
-      ]),
+    return InkWell(
+      onTap: () => _agregarGastoPreseleccionado(n),
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(15), border: Border.all(width: 3)),
+        child: Stack(children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(i), Spacer(), Text(n, style: TextStyle(fontWeight: FontWeight.bold)), Text("\$${m.toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 26))]),
+          Positioned(top: 0, right: 0, child: InkWell(onTap: ()=> _borrarSobre(n), child: Container(padding: EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(width: 2)), child: Icon(Icons.close, size: 14)))),
+        ]),
+      ),
     );
   }
 }
