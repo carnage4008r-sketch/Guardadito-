@@ -37,6 +37,51 @@ class _HomeScreenState extends State<HomeScreen> {
   
   double get total => sobres.values.fold(0, (a, b) => a + b);
 
+  void _borrarSobre(String nombre) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('¿Borrar $nombre?'),
+        content: Text('Se pondrá en \$0. ¿Seguro?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancelar')),
+          TextButton(
+            onPressed: () {
+              box.put(nombre, 0.0);
+              setState(() {});
+              Navigator.pop(ctx);
+            },
+            child: Text('Borrar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _borrarTodo() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('¿Borrar TODO?'),
+        content: Text('Todos tus sobres quedarán en \$0. No se puede deshacer.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancelar')),
+          TextButton(
+            onPressed: () {
+              box.put('Casa', 0.0);
+              box.put('Chamba', 0.0);
+              box.put('Colchon', 0.0);
+              box.put('Gusto', 0.0);
+              setState(() {});
+              Navigator.pop(ctx);
+            },
+            child: Text('Sí, borrar todo', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _agregarIngreso() {
     TextEditingController ctrl = TextEditingController();
     showModalBottomSheet(
@@ -124,7 +169,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Color(0xFFFFB86A), title: Row(children: [Icon(Icons.savings), SizedBox(width: 8), Text("Guardadito", style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black))])),
+      appBar: AppBar(
+        backgroundColor: Color(0xFFFFB86A), 
+        title: Row(children: [Icon(Icons.savings), SizedBox(width: 8), Text("Guardadito", style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black))]),
+        actions: [
+          PopupMenuButton(
+            onSelected: (v) { if(v==1) _borrarTodo(); },
+            itemBuilder: (c) => [ PopupMenuItem(value: 1, child: Row(children: [Icon(Icons.delete_forever, color: Colors.red), SizedBox(width:8), Text('Borrar todo')])) ],
+          )
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(children: [
@@ -149,6 +203,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _card(String n, double m, Color c, IconData i) => Container(
     padding: EdgeInsets.all(12),
     decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(15), border: Border.all(width: 3)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(i), Spacer(), Text(n, style: TextStyle(fontWeight: FontWeight.bold)), Text("\$${m.toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28))]),
+    child: Stack(
+      children: [
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(i), Spacer(), Text(n, style: TextStyle(fontWeight: FontWeight.bold)), Text("\$${m.toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28))]),
+        Positioned(
+          top: 0, right: 0,
+          child: InkWell(
+            onTap: () => _borrarSobre(n),
+            child: Container(padding: EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(width: 2)), child: Icon(Icons.close, size: 14)),
+          ),
+        )
+      ],
+    ),
   );
 }
