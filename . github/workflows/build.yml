@@ -9,6 +9,9 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
+      - run: cp lib/main.dart /tmp/main.dart
+      - run: flutter create. --platforms android --project-name guardadito --overwrite
+      - run: cp /tmp/main.dart lib/main.dart
       - run: flutter pub get
       - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
