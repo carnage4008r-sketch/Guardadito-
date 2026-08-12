@@ -9,3 +9,4 @@ dependencies:
   hive: ^2.2.3
 flutter:
   uses-material-design: true
+  
