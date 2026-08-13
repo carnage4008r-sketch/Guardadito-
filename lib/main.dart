@@ -147,10 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _agregarGasto() {
-    _agregarGastoPreseleccionado('Comida');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,14 +166,14 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.all(20), 
             decoration: BoxDecoration(color: Color(0xFF0E4D64), borderRadius: BorderRadius.circular(15)),
             child: Column(children: [
-              Text("Saldo Total - Toca para agregar ganancia", style: TextStyle(color: Colors.white70, fontSize: 12)), 
+              Text("Saldo Total - Toca para agregar", style: TextStyle(color: Colors.white70, fontSize: 12)), 
               Text("\$${total.toStringAsFixed(0)}", style: TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.w900))
             ])
           ),
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.all(12),
             child: GridView.count(
               crossAxisCount: 2, 
               crossAxisSpacing: 12, 
@@ -193,14 +189,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           )
         ),
-        Padding(
-          padding: EdgeInsets.all(12),
-          child: Row(children: [
-            Expanded(child: ElevatedButton.icon(onPressed: _agregarIngreso, icon: Icon(Icons.add), label: Text("Ganancia"))),
-            SizedBox(width: 12),
-            Expanded(child: ElevatedButton.icon(onPressed: _agregarGasto, icon: Icon(Icons.remove), label: Text("Gasto"), style: ElevatedButton.styleFrom(backgroundColor: Colors.orange))),
-          ]),
-        )
       ]),
     );
   }
