@@ -16,7 +16,7 @@ jobs:
       - run: cp lib/main.dart /tmp/main.dart
       - run: rm -rf android
       - run: cd /tmp && flutter create --template app --platforms android --project-name guardadito guardadito_temp
-      - run: cp -r /tmp/guardadito_temp/android.
+      - run: cp -r /tmp/guardadito_temp/android .
       - run: cp /tmp/main.dart lib/main.dart
       - run: sed -i "s/1.7.10/1.9.22/g; s/1.7.1/1.9.22/g; s/1.8.10/1.9.22/g" android/app/build.gradle
       - run: sed -i "s/1.7.10/1.9.22/g; s/1.8.22/1.9.22/g" android/settings.gradle
